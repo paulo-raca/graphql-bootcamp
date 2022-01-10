@@ -5,6 +5,8 @@ const typeDefs = `
     type Query {
       me: User!
       post: Post!
+      add(a: Float!, b: Float!): Float!
+      greet(name: String!): String!
     }
 
     type User {
@@ -36,10 +38,16 @@ const resolvers = {
     post: () => {
       return {
         id: '1234',
-        title: 'Everything is Awesome',
+        Title: 'Everything is Awesome',
         body: "Haven't you watched the Lego Movie yet?",
         published: true
       }
+    },
+    add: (root, args, context) => {
+      return args.a + args.b
+    },
+    greet: (root, args, context) => {
+      return `Hello, ${args.name}`
     },
   }
 }
