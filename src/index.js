@@ -1,10 +1,40 @@
-import myLocation, { msg, name, getGreeting } from "./myModule";
-import add, { subtract as sub } from "./math";
+import { GraphQLServer } from "graphql-yoga";
 
-console.log(msg)
-console.log(name)
-console.log(myLocation)
-console.log(getGreeting(name))
+// Type Definitions (schema)
 
-console.log(`10 + 5 = ${add(10, 5)}`)
-console.log(`10 - 5 = ${sub(10, 5)}`)
+const typeDefs = `
+    type Person {
+      name: String!
+      bio: String!
+      location: String!
+    }
+    type Query {
+        hello: String!
+        name: String!
+        me: Person
+    }
+`
+
+// Resolver
+const resolvers = {
+  Query: {
+    hello() {
+      return 'Hi!'
+    },
+    name() {
+      return 'Paulo Costa'
+    },
+    me() {
+      return {
+        name: 'Paulo Costa',
+        bio: 'Sou legal',
+        location: 'Campinas, SP, Brazil'
+      }
+    }
+  }
+}
+
+const server = new GraphQLServer({typeDefs: typeDefs, resolvers: resolvers})
+server.start(() => {
+  console.log('Server is running');
+})
