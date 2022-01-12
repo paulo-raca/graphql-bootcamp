@@ -91,9 +91,9 @@ const typeDefs = `
     }
 
     type Mutation {
-      createUser(name: String!, email: String!, age: Int): User!
-      createPost(title: String!, body: String!, published: Boolean!, authorId: ID!): Post!
-      createComment(text: String!, authorId: ID!, postId: ID!): Comment!
+      createUser(data: CreateUserInput!): User!
+      createPost(data: CreatePostInput!): Post!
+      createComment(data: CreateCommentInput!): Comment!
     }
 
     type User {
@@ -105,6 +105,12 @@ const typeDefs = `
       comments: [Comment!]!
     }
 
+    input CreateUserInput {
+      name: String!
+      email: String!
+      age: Int
+    }
+
     type Post {
       id: ID!
       title: String!
@@ -114,11 +120,24 @@ const typeDefs = `
       comments: [Comment!]!
     }
 
+    input CreatePostInput {
+      title: String!
+      body: String!
+      published: Boolean!
+      authorId: ID!
+    }
+
     type Comment {
       id: ID!
       text: String!
       author: User!
       post: Post!
+    }
+
+    input CreateCommentInput {
+      text: String!
+      authorId: ID!
+      postId: ID!
     }
 `
 
@@ -157,37 +176,37 @@ const resolvers = {
   },
   Mutation: {
     createUser(parent, args, context, info) {
-      if (users.some( (user) => user.email == args.email )) {
-        throw new Error(`Email ${args.email} already registered`)
+      if (users.some( (user) => user.email == args.data.email )) {
+        throw new Error(`Email ${args.data.email} already registered`)
       }
       const user = {
         id: uuidv4(),
-        ...args
+        ...args.data
       }
       users.push(user)
       return user
     },
     createPost(parent, args, context, info) {
-      if (!users.some( (user) => user.id == args.authorId )) {
-        throw new Error(`Author ID ${args.authorId} not found`)
+      if (!users.some( (user) => user.id == args.data.authorId )) {
+        throw new Error(`Author ID ${args.data.authorId} not found`)
       }
       const post = {
         id: uuidv4(),
-        ...args
+        ...args.data
       }
       posts.push(post)
       return post
     },
     createComment(parent, args, context, info) {
-      if (!users.some( (user) => user.id == args.authorId )) {
-        throw new Error(`Author ID ${args.authorId} not found`)
+      if (!users.some( (user) => user.id == args.data.authorId )) {
+        throw new Error(`Author ID ${args.data.authorId} not found`)
       }
-      if (!posts.some( (post) => post.id == args.postId && post.published )) {
+      if (!posts.some( (post) => post.id == args.data.postId && post.published )) {
         throw new Error(`Post ID ${args.postId} not found`)
       }
       const comment = {
         id: uuidv4(),
-        ...args
+        ...args.data
       }
       comments.push(comment)
       return comment
