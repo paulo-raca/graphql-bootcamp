@@ -46,6 +46,26 @@ const posts = [
   },
 ]
 
+
+const comments = [
+  {
+    id: '100',
+    text: 'Nice Post!',
+  },
+  {
+    id: '101',
+    text: 'Aw, thanx!',
+  },
+  {
+    id: '102',
+    text: 'I disagree with everything',
+  },
+  {
+    id: '103',
+    text: 'Post made me sleep',
+  }
+]
+
 // Type Definitions (schema)
 const typeDefs = `
     type Query {
@@ -53,6 +73,7 @@ const typeDefs = `
       post: Post!
       users(query: String): [User!]!
       posts(query: String, published: Boolean): [Post!]!
+      comments: [Comment!]!
     }
 
     type User {
@@ -69,6 +90,11 @@ const typeDefs = `
       body: String!
       published: Boolean!
       author(index: Int): User!
+    }
+
+    type Comment {
+      id: ID!
+      text: String!
     }
 `
 
@@ -100,6 +126,9 @@ const resolvers = {
         ret = ret.filter((post) => post.published == args.published)
       }
       return ret
+    },
+    comments: (parent, args, context, info) => {
+      return comments
     },
   },
   Post: {
