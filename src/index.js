@@ -51,18 +51,22 @@ const comments = [
   {
     id: '100',
     text: 'Nice Post!',
+    authorId: '34',
   },
   {
     id: '101',
     text: 'Aw, thanx!',
+    authorId: '5656',
   },
   {
     id: '102',
     text: 'I disagree with everything',
+    authorId: '17',
   },
   {
     id: '103',
     text: 'Post made me sleep',
+    authorId: '5656',
   }
 ]
 
@@ -82,6 +86,7 @@ const typeDefs = `
       email: String!
       age: Int
       posts: [Post!]!
+      comments: [Comment!]!
     }
 
     type Post {
@@ -95,6 +100,7 @@ const typeDefs = `
     type Comment {
       id: ID!
       text: String!
+      author: User!
     }
 `
 
@@ -139,8 +145,16 @@ const resolvers = {
   User: {
     posts(parent, args, context, info) {
       return posts.filter((post) => post.authorId == parent.id)
-    } 
-  }
+    },
+    comments(parent, args, context, info) {
+      return comments.filter((comment) => comment.authorId == parent.id)
+    },
+  },
+  Comment: {
+    author(parent, args, context, info) {
+      return users.find((user) => user.id == parent.authorId)
+    }
+  },
 }
 
 const server = new GraphQLServer({typeDefs: typeDefs, resolvers: resolvers})
