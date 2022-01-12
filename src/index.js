@@ -52,29 +52,38 @@ const comments = [
     id: '100',
     text: 'Nice Post!',
     authorId: '34',
+    postId: '1',
   },
   {
     id: '101',
     text: 'Aw, thanx!',
     authorId: '5656',
+    postId: '1',
   },
   {
     id: '102',
     text: 'I disagree with everything',
     authorId: '17',
+    postId: '3',
   },
   {
     id: '103',
     text: 'Post made me sleep',
     authorId: '5656',
+    postId: '2',
   }
 ]
 
 // Type Definitions (schema)
 const typeDefs = `
+    # Foo Bar
     type Query {
+      # Current user
       me: User!
+      # All Posts
       post: Post!
+      # All Users
+      # @param query Filter stuff
       users(query: String): [User!]!
       posts(query: String, published: Boolean): [Post!]!
       comments: [Comment!]!
@@ -94,13 +103,15 @@ const typeDefs = `
       title: String!
       body: String!
       published: Boolean!
-      author(index: Int): User!
+      author: User!
+      comments: [Comment!]!
     }
 
     type Comment {
       id: ID!
       text: String!
       author: User!
+      post: Post!
     }
 `
 
@@ -140,7 +151,10 @@ const resolvers = {
   Post: {
     author(parent, args, context, info) {
       return users.find((user) => user.id == parent.authorId)
-    } 
+    },
+    comments(parent, args, context, info) {
+      return comments.filter((comment) => comment.postId == parent.id)
+    },
   },
   User: {
     posts(parent, args, context, info) {
@@ -153,7 +167,10 @@ const resolvers = {
   Comment: {
     author(parent, args, context, info) {
       return users.find((user) => user.id == parent.authorId)
-    }
+    },
+    post(parent, args, context, info) {
+      return posts.find((post) => post.id == parent.postId)
+    },
   },
 }
 
