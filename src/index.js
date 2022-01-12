@@ -5,8 +5,9 @@ const typeDefs = `
     type Query {
       me: User!
       post: Post!
-      add(a: Float!, b: Float!): Float!
+      add(numbers: [Float!]!): Float!
       greet(name: String!): String!
+      grades: [Int!]!
     }
 
     type User {
@@ -43,12 +44,15 @@ const resolvers = {
         published: true
       }
     },
-    add: (root, args, context) => {
-      return args.a + args.b
-    },
     greet: (root, args, context) => {
       return `Hello, ${args.name}`
     },
+    add: (root, args, context) => {
+      return args.numbers.reduce( (a, b) => a + b, 0 )
+    },
+    grades: () => {
+      return [1, 2, 3, 4]
+    }
   }
 }
 
