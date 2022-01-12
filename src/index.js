@@ -27,18 +27,22 @@ const posts = [
     title: 'Everything is Awesome',
     body: "Haven't you watched the Lego Movie yet?",
     published: true
+    ,
+    authorId: '5656',
   },
   {
     id: '2',
     title: 'Mary had a little lamb',
     body: "It's fleece was white as snow\nAnd everythere that Mary went,\nThe lamb was sure to go",
-    published: true
+    published: true,
+    authorId: '17',
   },
   {
     id: '3',
     title: 'Let\'s learn GraphQL',
     body: "Work in progress...",
-    published: false
+    published: false,
+    authorId: '5656',
   },
 ]
 
@@ -63,6 +67,7 @@ const typeDefs = `
       title: String!
       body: String!
       published: Boolean!
+      author(index: Int): User!
     }
 `
 
@@ -75,14 +80,14 @@ const resolvers = {
     post: () => {
       return posts[0]
     },
-    users: (root, args, context) => {
+    users: (parent, args, context, info) => {
       var ret = users
       if (args.query) {
         ret = ret.filter((user) => user.name.toLowerCase().includes(args.query.toLowerCase()))
       }
       return ret
     },
-    posts: (root, args, context) => {
+    posts: (parent, args, context, info) => {
       var ret = posts
       if (args.query) {
         ret = ret.filter((post) => {
@@ -95,6 +100,11 @@ const resolvers = {
       }
       return ret
     },
+  },
+  Post: {
+    author(parent, args, context, info) {
+      return users.find((user) => user.id == parent.authorId)
+    } 
   }
 }
 
